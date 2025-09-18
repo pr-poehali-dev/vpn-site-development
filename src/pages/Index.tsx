@@ -60,7 +60,7 @@ export default function Index() {
               <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center neon-glow">
                 <Icon name="Shield" className="text-white" size={20} />
               </div>
-              <span className="text-xl font-bold gradient-text">VPN Security</span>
+              <span className="text-xl font-bold gradient-text">3d46368f34dfb263181b0770e8b5b2ea</span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
