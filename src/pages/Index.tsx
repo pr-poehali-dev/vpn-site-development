@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -6,13 +6,31 @@ import Icon from '@/components/ui/icon';
 
 export default function Index() {
   const [speedTest, setSpeedTest] = useState({ progress: 0, speed: 0, isRunning: false });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      title: "Максимальная скорость",
+      subtitle: "Протестировано миллионами",
+      description: "Наши серверы обеспечивают скорость до 1 Гбит/с без потери качества соединения",
+      stats: "1 Гбит/с",
+      color: "from-blue-500 to-purple-600"
+    },
+    {
+      title: "Полная анонимность", 
+      subtitle: "Военный уровень защиты",
+      description: "AES-256 шифрование и zero-log политика гарантируют 100% приватность ваших данных",
+      stats: "256-bit",
+      color: "from-green-400 to-blue-500"
+    }
+  ];
 
   const startSpeedTest = () => {
     setSpeedTest({ progress: 0, speed: 0, isRunning: true });
     const interval = setInterval(() => {
       setSpeedTest(prev => {
         const newProgress = prev.progress + 2;
-        const newSpeed = Math.floor(Math.random() * 50 + 80); // 80-130 Mbps
+        const newSpeed = Math.floor(Math.random() * 50 + 80);
         
         if (newProgress >= 100) {
           clearInterval(interval);
@@ -24,65 +42,117 @@ export default function Index() {
     }, 100);
   };
 
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 glass-effect">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-black/50 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center animate-pulse-glow">
+              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center neon-glow">
                 <Icon name="Shield" className="text-white" size={20} />
               </div>
               <span className="text-xl font-bold gradient-text">VPN Security</span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#home" className="text-gray-700 hover:text-primary transition-colors">Главная</a>
-              <a href="#features" className="text-gray-700 hover:text-primary transition-colors">Преимущества</a>
-              <a href="#security" className="text-gray-700 hover:text-primary transition-colors">Безопасность</a>
-              <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Контакты</a>
+              <a href="#home" className="text-gray-300 hover:text-primary transition-colors">Главная</a>
+              <a href="#features" className="text-gray-300 hover:text-primary transition-colors">Преимущества</a>
+              <a href="#security" className="text-gray-300 hover:text-primary transition-colors">Безопасность</a>
+              <a href="#contact" className="text-gray-300 hover:text-primary transition-colors">Контакты</a>
             </div>
             
-            <Button className="gradient-bg hover:opacity-90 transition-opacity">
+            <Button className="gradient-bg hover:opacity-90 transition-opacity neon-glow">
               Попробовать бесплатно
             </Button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero Section with Slider */}
       <section id="home" className="pt-24 pb-16 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left animate-fade-in">
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                Защити свой
-                <span className="gradient-text block">интернет</span>
-                прямо сейчас
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Максимальная скорость, полная анонимность и защита данных. 
-                Протестируй скорость наших серверов и убедись сам!
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="gradient-bg hover:opacity-90 transition-opacity text-lg px-8 py-4">
-                  <Icon name="Rocket" className="mr-2" size={20} />
-                  Начать защиту
+            {/* Slider */}
+            <div className="relative animate-fade-in">
+              <div className="overflow-hidden rounded-2xl">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {slides.map((slide, index) => (
+                    <div key={index} className="w-full flex-shrink-0">
+                      <div className={`p-8 rounded-2xl bg-gradient-to-r ${slide.color} card-dark backdrop-blur-lg`}>
+                        <div className="text-center text-white">
+                          <div className="text-6xl font-bold mb-2 opacity-20">
+                            {slide.stats}
+                          </div>
+                          <h2 className="text-3xl font-bold mb-2">
+                            {slide.title}
+                          </h2>
+                          <p className="text-lg opacity-90 mb-4">
+                            {slide.subtitle}
+                          </p>
+                          <p className="text-sm opacity-75 leading-relaxed">
+                            {slide.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Slider Controls */}
+              <div className="flex justify-between items-center mt-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={prevSlide}
+                  className="bg-gray-800/50 border-gray-700 hover:bg-gray-700"
+                >
+                  <Icon name="ChevronLeft" size={20} />
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-scale">
-                  <Icon name="Play" className="mr-2" size={20} />
-                  Как это работает
+                
+                <div className="flex space-x-2">
+                  {slides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-3 h-3 rounded-full transition-all ${
+                        index === currentSlide 
+                          ? 'bg-primary neon-glow' 
+                          : 'bg-gray-600 hover:bg-gray-500'
+                      }`}
+                    />
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={nextSlide}
+                  className="bg-gray-800/50 border-gray-700 hover:bg-gray-700"
+                >
+                  <Icon name="ChevronRight" size={20} />
                 </Button>
               </div>
             </div>
             
             {/* Speed Test Widget */}
             <div className="animate-scale-in">
-              <Card className="p-8 glass-effect border-0 shadow-2xl hover-scale">
+              <Card className="p-8 card-dark border-gray-800 shadow-2xl hover-scale">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-2 gradient-text">Тест скорости</h3>
-                  <p className="text-gray-600">Проверь скорость наших серверов</p>
+                  <p className="text-gray-400">Проверь скорость наших серверов</p>
                 </div>
                 
                 <div className="space-y-6">
@@ -91,23 +161,23 @@ export default function Index() {
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary animate-spin" 
                            style={{ animationDuration: speedTest.isRunning ? '1s' : '0s' }}>
                       </div>
-                      <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                      <div className="absolute inset-2 bg-gray-900 rounded-full flex items-center justify-center border border-gray-700">
                         <div className="text-center">
                           <div className="text-3xl font-bold gradient-text">
                             {speedTest.speed}
                           </div>
-                          <div className="text-sm text-gray-600">Mbps</div>
+                          <div className="text-sm text-gray-400">Mbps</div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <Progress value={speedTest.progress} className="h-3" />
+                  <Progress value={speedTest.progress} className="h-3 bg-gray-800" />
                   
                   <Button 
                     onClick={startSpeedTest} 
                     disabled={speedTest.isRunning}
-                    className="w-full gradient-bg hover:opacity-90 transition-opacity"
+                    className="w-full gradient-bg hover:opacity-90 transition-opacity neon-glow"
                     size="lg"
                   >
                     {speedTest.isRunning ? (
@@ -130,13 +200,13 @@ export default function Index() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 px-6 bg-white/50">
+      <section id="features" className="py-16 px-6 bg-gray-900/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 gradient-text">
               Почему выбирают нас
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Мы предоставляем лучшие VPN-решения с фокусом на скорость, безопасность и простоту использования
             </p>
           </div>
@@ -180,14 +250,14 @@ export default function Index() {
                 color: 'from-pink-500 to-red-500'
               }
             ].map((feature, index) => (
-              <Card key={index} className="p-6 hover-scale transition-all duration-300 border-0 shadow-lg hover:shadow-xl group">
+              <Card key={index} className="p-6 hover-scale transition-all duration-300 card-dark border-gray-800 shadow-lg hover:shadow-xl hover:neon-glow group">
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${feature.color} flex items-center justify-center mb-4 animate-float`}>
                   <Icon name={feature.icon as any} className="text-white" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-3 group-hover:gradient-text transition-all">
+                <h3 className="text-xl font-bold mb-3 text-white group-hover:gradient-text transition-all">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-400 leading-relaxed">
                   {feature.description}
                 </p>
               </Card>
@@ -204,7 +274,7 @@ export default function Index() {
               <h2 className="text-4xl lg:text-5xl font-bold mb-6 gradient-text">
                 Безопасность на первом месте
               </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-400 mb-8 leading-relaxed">
                 Мы используем самые современные технологии шифрования и протоколы безопасности, 
                 чтобы ваши данные всегда оставались защищенными.
               </p>
@@ -218,38 +288,38 @@ export default function Index() {
                 ].map((item, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="font-medium">{item.label}</span>
+                      <span className="font-medium text-white">{item.label}</span>
                       <span className="text-accent font-bold">{item.value}%</span>
                     </div>
-                    <Progress value={item.value} className="h-2" />
+                    <Progress value={item.value} className="h-2 bg-gray-800" />
                   </div>
                 ))}
               </div>
             </div>
             
             <div className="animate-scale-in">
-              <Card className="p-8 glass-effect border-0 shadow-2xl">
+              <Card className="p-8 card-dark border-gray-800 shadow-2xl neon-glow">
                 <div className="text-center space-y-6">
-                  <div className="w-24 h-24 gradient-bg rounded-full mx-auto flex items-center justify-center animate-pulse-glow">
+                  <div className="w-24 h-24 gradient-bg rounded-full mx-auto flex items-center justify-center neon-glow">
                     <Icon name="ShieldCheck" className="text-white" size={40} />
                   </div>
                   <h3 className="text-2xl font-bold gradient-text">Ваша защита активна</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <Icon name="CheckCircle" className="text-green-500 mx-auto mb-2" size={24} />
-                      <div className="text-sm font-medium">IP скрыт</div>
+                    <div className="text-center p-4 bg-green-900/20 rounded-lg border border-green-700/30">
+                      <Icon name="CheckCircle" className="text-green-400 mx-auto mb-2" size={24} />
+                      <div className="text-sm font-medium text-white">IP скрыт</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <Icon name="CheckCircle" className="text-green-500 mx-auto mb-2" size={24} />
-                      <div className="text-sm font-medium">DNS защищен</div>
+                    <div className="text-center p-4 bg-green-900/20 rounded-lg border border-green-700/30">
+                      <Icon name="CheckCircle" className="text-green-400 mx-auto mb-2" size={24} />
+                      <div className="text-sm font-medium text-white">DNS защищен</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <Icon name="CheckCircle" className="text-green-500 mx-auto mb-2" size={24} />
-                      <div className="text-sm font-medium">Трафик зашифрован</div>
+                    <div className="text-center p-4 bg-green-900/20 rounded-lg border border-green-700/30">
+                      <Icon name="CheckCircle" className="text-green-400 mx-auto mb-2" size={24} />
+                      <div className="text-sm font-medium text-white">Трафик зашифрован</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <Icon name="CheckCircle" className="text-green-500 mx-auto mb-2" size={24} />
-                      <div className="text-sm font-medium">Анонимность 100%</div>
+                    <div className="text-center p-4 bg-green-900/20 rounded-lg border border-green-700/30">
+                      <Icon name="CheckCircle" className="text-green-400 mx-auto mb-2" size={24} />
+                      <div className="text-sm font-medium text-white">Анонимность 100%</div>
                     </div>
                   </div>
                 </div>
@@ -270,7 +340,7 @@ export default function Index() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-white text-primary hover:bg-gray-100">
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-white text-primary hover:bg-gray-100 neon-glow">
               <Icon name="Download" className="mr-2" size={20} />
               Скачать приложение
             </Button>
@@ -294,13 +364,13 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 px-6">
+      <footer className="bg-black border-t border-gray-800 py-8 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center neon-glow">
               <Icon name="Shield" className="text-white" size={20} />
             </div>
-            <span className="text-xl font-bold">VPN Security</span>
+            <span className="text-xl font-bold gradient-text">VPN Security</span>
           </div>
           <p className="text-gray-400">
             © 2024 VPN Security. Все права защищены. Ваша приватность - наш приоритет.
